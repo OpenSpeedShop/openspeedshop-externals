@@ -1,8 +1,8 @@
 #!/bin/bash
 set -x
 
-ossrel=2.4.0
-cbtfrel=1.9.2
+ossrel=2.4.1
+cbtfrel=1.9.3
 cbtfagrel=1.3.0
 QtGraphrel=1.0.0
 

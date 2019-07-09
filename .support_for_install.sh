@@ -14,7 +14,8 @@ boostver=1_67_0
 #xercescver=3.1.1
 xercescver=3.2.1
 launchmonver=20121010
-cmakever=3.2.2
+cmakever=3.13.2
+cmakevershare=3.13
 expatver=2.1.0
 
 # Package Version Numbers
@@ -25,12 +26,12 @@ zlibver=1.2.11
 GOTCHAver=20180524
 libdwarfver=20170416
 libunwindver=1.2.1
-papiver=5.6.0
+papiver=5.7.0
 sqlitever=3.8.4
 libmonitorver=20130218
 vampirtracever=5.3.2
 #dyninstver=20181108
-dyninstver=10.0.0
+dyninstver=10.1.0
 tbbver=2018_U6
 symtabapiver=8.1.2
 mrnetver=20180825
@@ -49,8 +50,8 @@ omptver=20160808
 llvm_openmpver=20180301
 
 # OSS and CBTF versions
-openspeedshopver=2.4.0
-cbtfver=1.9.2
+openspeedshopver=2.4.1
+cbtfver=1.9.3
 cbtfargoguiver=1.3.0
 
 default_oss_prefix=/opt/OSS
@@ -768,7 +769,7 @@ function setup_for_oss_cbtf() {
    #echo "setting-up: target_shared=%{target_shared}"
 
    
-   if [ -f $KRELL_ROOT_PREFIX/cmake-$cmakever/share/cmake-3.2/Modules/FindPythonLibs.cmake -a -f $KRELL_ROOT_PREFIX/cmake-$cmakever/bin/cmake ]; then
+   if [ -f $KRELL_ROOT_PREFIX/cmake-$cmakever/share/cmake-$cmakevershare/Modules/FindPythonLibs.cmake -a -f $KRELL_ROOT_PREFIX/cmake-$cmakever/bin/cmake ]; then
          echo "USING existing CMAKE build due to it is already installed in $KRELL_ROOT_PREFIX/cmake-$cmakever directory, KRELL_ROOT_PREFIX=$KRELL_ROOT_PREFIX"
          export PATH=$KRELL_ROOT_PREFIX/cmake-$cmakever/bin:$PATH
          echo "setup_for_oss_cbtf(), PATH=$PATH"
@@ -1976,7 +1977,7 @@ function setup_for_oss_cbtf() {
          echo "found TBB, in $KRELL_ROOT_PREFIX/tbb"
          export TBBROOT=${KRELL_ROOT_PREFIX}/tbb/include
          export TBB_INSTALL_DIR=${KRELL_ROOT_PREFIX}/tbb/lib
-         export TBB_ROOT_DIR=${KRELL_ROOT_PREFIX}/tbb/lib
+         export TBB_ROOT_DIR=${KRELL_ROOT_PREFIX}/tbb
          export TBB_INCLUDE_DIR=${KRELL_ROOT_PREFIX}/tbb/include
          export TBB_LIBRARY=${KRELL_ROOT_PREFIX}/tbb/lib
          export TBB_FOUND=1
@@ -7920,7 +7921,7 @@ function build() {
          echo "SKIPPING CMAKE build due to --skip-cmake-build on install tool line"
        else
           # Is cmake for building OSS already built?   Then don't build again
-          if [ -f $KRELL_ROOT_PREFIX/cmake-$cmakever/share/cmake-3.2/Modules/FindPythonLibs.cmake -a -f $KRELL_ROOT_PREFIX/cmake-$cmakever/bin/cmake ]; then
+          if [ -f $KRELL_ROOT_PREFIX/cmake-$cmakever/share/cmake-$cmakevershare/Modules/FindPythonLibs.cmake -a -f $KRELL_ROOT_PREFIX/cmake-$cmakever/bin/cmake ]; then
               echo "SKIPPING CMAKE build due to it is already installed in $KRELL_ROOT_PREFIX/cmake-$cmakever directory"
               export PATH=$KRELL_ROOT_PREFIX/cmake-$cmakever/bin:$PATH
           else
@@ -7929,7 +7930,7 @@ function build() {
               # 1 = special --build-cmake request
               # 0 = part of normal --build-krell-root
               build_cmake_routine 0
-              if [ -f $KRELL_ROOT_PREFIX/cmake-$cmakever/share/cmake-3.2/Modules/FindPythonLibs.cmake -a -f $KRELL_ROOT_PREFIX/cmake-$cmakever/bin/cmake ]; then
+              if [ -f $KRELL_ROOT_PREFIX/cmake-$cmakever/share/cmake-$cmakevershare/Modules/FindPythonLibs.cmake -a -f $KRELL_ROOT_PREFIX/cmake-$cmakever/bin/cmake ]; then
                   echo "CMAKE BUILD TOOL BUILT SUCCESSFULLY into $KRELL_ROOT_PREFIX/cmake"
                   # use this cmake for the rest of the build
                   export PATH=$KRELL_ROOT_PREFIX/cmake-$cmakever/bin:$PATH
@@ -10368,7 +10369,9 @@ else
 fi
 
 if [ -z $KRELL_ROOT_SKIP_VAMPIRTRACE_BUILD ]; then
-   export skip_vampirtrace=0
+   # export skip_vampirtrace=0
+   # Always skip building vampirtrace
+   export skip_vampirtrace=1
 else
    echo "SKIPPING binutils build because KRELL_ROOT_SKIP_VAMPIRTRACE_BUILD is set."
    export skip_vampirtrace=1

@@ -19,6 +19,7 @@ set     root_native        /app/unsupported/PETtools/CE/pkgs/openss/krellroot_v2
 set     oss_native         /app/unsupported/PETtools/CE/pkgs/openss/osscbtf_v2.4.1.release.mpich
 set     cbtf_native        /app/unsupported/PETtools/CE/pkgs/openss/cbtf_v2.4.1.release.mpich
 set     boost_root         /app/unsupported/PETtools/CE/pkgs/openss/krellroot_v2.4.1.release
+set     qt3_root         /app/unsupported/PETtools/CE/pkgs/openss/krellroot_v2.4.1.release/qt3
 set      gcc_env           /apps/gnu_compiler/4.8.5
 #set     cuda_root	   /p/home/apps/cuda/7.5
 #set     cupti_root	   /p/home/apps/cuda/7.5/extras/CUPTI
@@ -47,7 +48,8 @@ prepend-path LD_LIBRARY_PATH $root_native/lib64
 prepend-path LD_LIBRARY_PATH $cbtf_native/lib64
 prepend-path LD_LIBRARY_PATH $boost_root/lib
 prepend-path LD_LIBRARY_PATH $oss_native/lib64
-#prepend-path LD_LIBRARY_PATH $cupti_root/lib64
+prepend-path LD_LIBRARY_PATH $qt3_root/lib64
+prepend-path LD_LIBRARY_PATH $qt3_root/lib
 #prepend-path LD_LIBRARY_PATH $cuda_root/lib64
 prepend-path LD_LIBRARY_PATH $gcc_env/lib64
 

@@ -18,23 +18,26 @@ MPICH_IDIR=/p/app/intel/parallel_studio_xe_2019_update4/impi/2019.4.243/intel64
 
 KROOT_IDIR=${BASE_DIR}/krellroot${ROOT_VERS}
 LTDL_IDIR=${BASE_DIR}/autotools${ROOT_VERS}
+PYTHON_IDIR=${BASE_DIR}/python-2.7.3
 CBTF_IDIR=${BASE_DIR}/cbtf${TOOL_VERS}
 OSSCBTF_IDIR=${BASE_DIR}/osscbtf${TOOL_VERS}
 OSSOFF_IDIR=${BASE_DIR}/ossoff${TOOL_VERS}
 CUDA_IDIR=/p/app/cuda/9.1
-CUPTI_IDIR=${CUDA_IDIR}/extras/CUPTI
+CUPTI_IDIR=/p/app/cuda/9.1/extras/CUPTI
 GRAPHVIZ_IDIR=${BASE_DIR}/graphviz${GRAPHVIZ_VERS}
 QTGRAPH_IDIR=${BASE_DIR}/QtGraph${QTGRAPH_VERS}
 
-./install-tool --verbose --build-autotools --krell-root-prefix ${LTDL_IDIR}  2>&1 | tee install_tool_build_autotools.log
+#./install-tool --verbose --build-python --krell-root-prefix ${PYTHON_IDIR}  2>&1 | tee install_tool_build_python.log
+
+#./install-tool --verbose --build-autotools --krell-root-prefix ${LTDL_IDIR}  2>&1 | tee install_tool_build_autotools.log
 # Build the externals needed by cbtf and openspeedshop
 #./install-tool --verbose --build-krell-root --krell-root-prefix ${KROOT_IDIR} --with-mpich ${MPICH_IDIR} --with-mpt ${MPT_IDIR} 2>&1 | tee install_tool_build_krell_root.log
 
 # Build cbtf (base cbtf support) , cbtf-krell (collectors, runtimes), cbtf-argonavis (gpu support), cbtf-lanl (sys admin tools)
-./install-tool --verbose --build-cbtf-all --cbtf-prefix ${CBTF_IDIR} --krell-root-prefix ${KROOT_IDIR} --with-mpich ${MPICH_IDIR} --with-mpt ${MPT_IDIR} --with-ltdl ${LTDL_IDIR}  2>&1 | tee install_tool_build_cbtf.log
+./install-tool --verbose --build-cbtf-all --cbtf-prefix ${CBTF_IDIR} --krell-root-prefix ${KROOT_IDIR} --with-mpich ${MPICH_IDIR} --with-mpt ${MPT_IDIR} --with-ltdl ${LTDL_IDIR}  --with-python ${PYTHON_IDIR} --with-python-vers 2.7 --with-cuda ${CUDA_IDIR} --with-cupti ${CUPTI_IDIR} 2>&1 | tee install_tool_build_cbtf.log
 
 # Build openspeedshop using cbtf components and the root external packages
-./install-tool --verbose --build-oss --openss-prefix ${OSSCBTF_IDIR} --cbtf-prefix ${CBTF_IDIR} --krell-root-prefix ${KROOT_IDIR} --with-mpich ${MPICH_IDIR} --with-mpt ${MPT_IDIR} --with-ltdl ${LTDL_IDIR} 2>&1 | tee install_tool_build_oss.log
+./install-tool --verbose --build-oss --openss-prefix ${OSSCBTF_IDIR} --cbtf-prefix ${CBTF_IDIR} --krell-root-prefix ${KROOT_IDIR} --with-mpich ${MPICH_IDIR} --with-mpt ${MPT_IDIR} --with-ltdl ${LTDL_IDIR} --with-python ${PYTHON_IDIR} --with-python-vers 2.7 --with-cuda ${CUDA_IDIR} --with-cupti ${CUPTI_IDIR} 2>&1 | tee install_tool_build_oss.log
 
 # IF BUILDING THE NEW GUI INTERFACE
 

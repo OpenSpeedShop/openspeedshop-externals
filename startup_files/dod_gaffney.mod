@@ -28,8 +28,8 @@ set     cbtf_native        /p/app/PET/pkgs/openss/cbtf_v2.4.1.release
 set     boost_root         /p/app/PET/pkgs/openss/krellroot_v2.4.1.release
 set     ltdl_root          /p/app/PET/pkgs/openss/autotools_v2.4.1.release
 #set      gcc_env           /apps/gnu_compiler/4.8.5
-#set     cuda_root	   /p/home/apps/cuda/7.5
-#set     cupti_root	   /p/home/apps/cuda/7.5/extras/CUPTI
+set     python_root	   /p/app/PET/pkgs/openss/python-2.7.3
+set     cupti_root	   /p/app/cuda/9.1/extras/CUPTI
 
 setenv          CBTF_MPI_IMPLEMENTATION	mpt
 setenv          OPENSS_MPI_IMPLEMENTATION	mpt
@@ -59,5 +59,8 @@ prepend-path LD_LIBRARY_PATH $qt3_root/lib64
 prepend-path LD_LIBRARY_PATH $qt3_root/lib
 prepend-path LD_LIBRARY_PATH $ltdl_root/lib64
 prepend-path LD_LIBRARY_PATH $ltdl_root/lib
-#prepend-path LD_LIBRARY_PATH $gcc_env/lib64
+prepend-path LD_LIBRARY_PATH $python_root/lib64
+prepend-path LD_LIBRARY_PATH $python_root/lib
+prepend-path LD_LIBRARY_PATH $cupti_root/lib64
+prepend-path LD_LIBRARY_PATH $cupti_root/lib
 

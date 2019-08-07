@@ -1,6 +1,6 @@
 #!/bin/bash
-#PBS -q debug
-#PBS -l select=40:ncpus=36:mpiprocs=36
+#PBS -q standard
+#PBS -l select=2:ncpus=32:mpiprocs=32
 #PBS -l walltime=00:35:00
 #PBS -j oe
 #PBS -N oss_nbody    
@@ -19,13 +19,14 @@ limit coredumpsize unlimited
 #module load osscbtf231d
 module use $PET_HOME/modules
 #module load openspeedshop/2.3.1.rc6
-module load openspeedshop/2.4.1.release.mpich
+module load openspeedshop/2.4.1.release
 #module load compiler/intel/15.0.3
 #module load compiler/gcc/4.8.5
 #module load mpi/sgimpt/2.12-11218
-module load compiler/intel/17.0.5 
+#module load compiler/intel/17.0.5 
 #module load mpi/sgimpt/2.19
-module load mpi/intelmpi/19.0.2
+#module load mpi/intelmpi/19.0.2
+module load mpt/2.18 compiler/intel/2018.1.163 
 
 
 
@@ -33,15 +34,17 @@ env | grep PBS
 env | grep BC
 cat $PBS_NODEFILE
 
-export NNN=1440
+export NNN=32
 #export TTT=2
 #export OMP_NUM_THREADS=$TTT
 #
 # Experiment #1 PCSAMP
 #
-#osspcsamp "mpiexec_mpt -np $NNN ./nbody"  
+osspcsamp --loops "mpiexec_mpt -np $NNN ./nbody"  
+ossusertime --loops "mpiexec_mpt -np $NNN ./nbody"  
+ossmpi "mpiexec_mpt -np $NNN ./nbody"  
 
 export CBTF_CSVDATA_DIR=/p/home/galarowi/openspeedshop-test-suite/src/nbody/cvsdata
 #cbtfsummary "mpiexec_mpt -np $NNN ./nbody"  
-cbtfsummary "mpirun -np $NNN ./nbody"  
+cbtfsummary "mpiexec_mpt -np $NNN ./nbody"  
 

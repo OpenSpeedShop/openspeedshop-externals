@@ -1,0 +1,41 @@
+#!/bin/bash
+#PBS -q standard
+#PBS -l select=4:ncpus=32:mpiprocs=32
+#PBS -l walltime=00:15:00
+#PBS -j oe
+#PBS -N oss_nbody    
+#PBS -A ARLAP96070PET
+
+cd ~/openspeedshop-test-suite/src/nbody
+source ${MODULESHOME}/init/bash
+module unload perftools
+
+limit coredumpsize unlimited
+
+module use $PET_HOME/modules
+module load openspeedshop
+module load  compiler/intel/2017.1.132 mpi/sgimpt/2.15
+
+
+
+env | grep PBS
+env | grep BC
+cat $PBS_NODEFILE
+
+export NNN=128
+#export TTT=2
+#export OMP_NUM_THREADS=$TTT
+#
+# Experiment #1 PCSAMP
+#
+osspcsamp "mpiexec_mpt -np $NNN ./nbody"  
+ossusertime "mpiexec_mpt -np $NNN ./nbody"  
+osshwcsamp "mpiexec_mpt -np $NNN ./nbody"  
+osshwc "mpiexec_mpt -np $NNN ./nbody"  
+ossmpi "mpiexec_mpt -np $NNN ./nbody"  
+ossmem "mpiexec_mpt -np $NNN ./nbody"  
+
+export CBTF_CSVDATA_DIR=/p/home/galarowi/openspeedshop-test-suite/src/nbody/cvsdata
+#cbtfsummary "mpiexec_mpt -np $NNN ./nbody"  
+cbtfsummary "mpiexec_mpt -np $NNN ./nbody"  
+

@@ -1752,6 +1752,37 @@ function setup_for_oss_cbtf() {
        fi
    fi
    
+   if [ $KRELL_ROOT_TBB ]; then
+       if [ "$display_summary" = 1 ] ; then 
+           echo "setting-up: KRELL_ROOT_TBB is defined to $KRELL_ROOT_TBB"
+       fi
+       export KRELL_ROOT_TBB_PHRASE="--with-tbb=$KRELL_ROOT_TBB"
+       export CMAKE_TBB_PHRASE="-DTBB_DIR=${KRELL_ROOT_TBB}"
+   else
+       if test -f $KRELL_ROOT_PREFIX/$LIBDIR/libtbb.a; then
+           if [ "$display_summary" = 1 ] ; then 
+               echo "setting-up: KRELL_ROOT_TBB is undefined, found in $LIBDIR, setting to KRELL_ROOT_PREFIX=$KRELL_ROOT_PREFIX"
+           fi
+           export KRELL_ROOT_TBB=$KRELL_ROOT_PREFIX
+           export KRELL_ROOT_TBB_PHRASE="--with-tbb=$KRELL_ROOT_PREFIX"
+           export CMAKE_TBB_PHRASE="-DTBB_DIR=${KRELL_ROOT_PREFIX}"
+       elif test -f $KRELL_ROOT_PREFIX/$ALTLIBDIR/libtbb.a; then
+           if [ "$display_summary" = 1 ] ; then 
+               echo "setting-up: KRELL_ROOT_TBB is undefined, found in $ALTLIBDIR, setting to KRELL_ROOT_PREFIX=$KRELL_ROOT_PREFIX"
+           fi
+           export KRELL_ROOT_TBB=$KRELL_ROOT_PREFIX
+           export KRELL_ROOT_TBB_PHRASE="--with-tbb=$KRELL_ROOT_PREFIX"
+           export CMAKE_TBB_PHRASE="-DTBB_DIR=${KRELL_ROOT_PREFIX}"
+       else
+           if [ "$display_summary" = 1 ] ; then 
+               echo "setting-up: KRELL_ROOT_TBB is undefined, setting to blanks"
+           fi
+           export KRELL_ROOT_TBB=
+           export KRELL_ROOT_TBB_PHRASE=""
+           export CMAKE_TBB_PHRASE=""
+       fi
+   fi
+   
    if [ $KRELL_ROOT_PTGF_BUILD_OPTION ]; then
        if [ "$display_summary" = 1 ] ; then 
            echo "setting-up: KRELL_ROOT_PTGF_BUILD_OPTION is defined to $KRELL_ROOT_PTGF_BUILD_OPTION."
@@ -1973,7 +2004,20 @@ function setup_for_oss_cbtf() {
        export CMAKE_CUPTI_PHRASE2=""
    fi
 
-   if [ -d $KRELL_ROOT_PREFIX/tbb ] && [ -f $KRELL_ROOT_PREFIX/tbb/lib/libtbb.so ]; then
+   echo "KRELL_ROOT_TBB (1) =${KRELL_ROOT_TBB}"
+   if [ -d $KRELL_ROOT_TBB ] && [ -f $KRELL_ROOT_TBB/lib/libtbb.so ]; then
+         echo "found TBB, in $KRELL_ROOT_TBB"
+         export TBBROOT=${KRELL_ROOT_TBB}/include
+         export TBB_INSTALL_DIR=${KRELL_ROOT_TBB}/lib
+         export TBB_ROOT_DIR=${KRELL_ROOT_TBB}
+         export TBB_INCLUDE_DIR=${KRELL_ROOT_TBB}/include
+         export TBB_LIBRARY=${KRELL_ROOT_TBB}/lib
+         export TBB_FOUND=1
+         export TBB_INCLUDE_DIRS=${KRELL_ROOT_TBB}/include
+         export TBB_LIBRARIES="${KRELL_ROOT_TBB}/lib/libtbb.so ${KRELL_ROOT_TBB}/lib/libtbbmalloc_proxy.so"
+         echo "TBB_LIBRARIES=${TBB_LIBRARIES}"
+         echo "TBB_INCLUDE_DIRS=${TBB_INCLUDE_DIRS}"
+   elif [ -d $KRELL_ROOT_PREFIX/tbb ] && [ -f $KRELL_ROOT_PREFIX/tbb/lib/libtbb.so ]; then
          echo "found TBB, in $KRELL_ROOT_PREFIX/tbb"
          export TBBROOT=${KRELL_ROOT_PREFIX}/tbb/include
          export TBB_INSTALL_DIR=${KRELL_ROOT_PREFIX}/tbb/lib
@@ -6304,51 +6348,53 @@ function build_dyninst_routine() {
 
 
 
-   #echo "check libelf"
-   #echo "KRELL_ROOT_LIBELF=$KRELL_ROOT_LIBELF"
-   #echo "KRELL_ROOT_PREFIX=$KRELL_ROOT_PREFIX"
+   echo "check libelf"
+   echo "KRELL_ROOT_LIBELF=$KRELL_ROOT_LIBELF"
+   echo "KRELL_ROOT_LIBELF/lib/libelf.so=$KRELL_ROOT_LIBELF/lib/libelf.so"
+   echo "KRELL_ROOT_PREFIX=$KRELL_ROOT_PREFIX"
 
    if [ ! -z $KRELL_ROOT_LIBELF ] && [ -f $KRELL_ROOT_LIBELF/$LIBDIR/libelf.so ]; then
-        #echo "KRELL_ROOT_LIBELF found or user specified libelf found "
+        echo "KRELL_ROOT_LIBELF found or user specified libelf found "
         export LIBELFDIR=$KRELL_ROOT_LIBELF
         export LIBELF_LIBNAME=$KRELL_ROOT_LIBELF/$LIBDIR/libelf.so
    elif [ ! -z $KRELL_ROOT_LIBELF ] && [ -f $KRELL_ROOT_LIBELF/$LIBDIR/libelf.a ]; then
-        #echo "KRELL_ROOT_LIBELF found or user specified libelf found "
+        echo "KRELL_ROOT_LIBELF found or user specified libelf found "
         export LIBELFDIR=$KRELL_ROOT_LIBELF
         export LIBELF_LIBNAME=$KRELL_ROOT_LIBELF/$LIBDIR/libelf.a
    elif [ ! -z $KRELL_ROOT_LIBELF ] && [ -f $KRELL_ROOT_LIBELF/$ALTLIBDIR/libelf.so ]; then
-        #echo "KRELL_ROOT_LIBELF found "
+        echo "KRELL_ROOT_LIBELF found "
         export LIBELFDIR=$KRELL_ROOT_LIBELF
         export LIBELF_LIBNAME=$KRELL_ROOT_LIBELF/$ALTLIBDIR/libelf.so
    elif [ ! -z $KRELL_ROOT_LIBELF ] && [ -f $KRELL_ROOT_LIBELF/$ALTLIBDIR/libelf.a ]; then
-        #echo "KRELL_ROOT_LIBELF found "
+        echo "KRELL_ROOT_LIBELF found "
         export LIBELFDIR=$KRELL_ROOT_LIBELF
         export LIBELF_LIBNAME=$KRELL_ROOT_LIBELF/$ALTLIBDIR/libelf.a
    elif [ ! -z $KRELL_ROOT_PREFIX ] && [ -f $KRELL_ROOT_PREFIX/$LIBDIR/libelf.so ]; then
-        #echo "KRELL_ROOT_PREFIX libelf found"
+        echo "KRELL_ROOT_PREFIX libelf found"
         export LIBELFDIR=$KRELL_ROOT_PREFIX
         export LIBELF_LIBNAME=$KRELL_ROOT_PREFIX/$LIBDIR/libelf.so
    elif [ ! -z $KRELL_ROOT_PREFIX ] && [ -f $KRELL_ROOT_PREFIX/$LIBDIR/libelf.a ]; then
-        #echo "KRELL_ROOT_PREFIX libelf found"
+        echo "KRELL_ROOT_PREFIX libelf found"
         export LIBELFDIR=$KRELL_ROOT_PREFIX
         export LIBELF_LIBNAME=$KRELL_ROOT_PREFIX/$LIBDIR/libelf.a
    elif [  ! -z $KRELL_ROOT_PREFIX ] && [ -f $KRELL_ROOT_PREFIX/$ALTLIBDIR/libelf.so ]; then
-        #echo "KRELL_ROOT_PREFIX based libelf found "
+        echo "KRELL_ROOT_PREFIX based libelf found "
         export LIBELFDIR=$KRELL_ROOT_LIBELF
         export LIBELF_LIBNAME=$KRELL_ROOT_PREFIX/$ALTLIBDIR/libelf.so
    elif [  ! -z $KRELL_ROOT_PREFIX ] && [ -f $KRELL_ROOT_PREFIX/$ALTLIBDIR/libelf.a ]; then
-        #echo "KRELL_ROOT_PREFIX based libelf found "
+        echo "KRELL_ROOT_PREFIX based libelf found "
         export LIBELFDIR=$KRELL_ROOT_LIBELF
         export LIBELF_LIBNAME=$KRELL_ROOT_PREFIX/$ALTLIBDIR/libelf.a
    elif [ -d $KRELL_ROOT_PREFIX ] && [ -f $KRELL_ROOT_PREFIX/$LIBDIR/libelf.so ]; then
-        #echo "KRELLROOT built libelf"
+        echo "KRELLROOT built libelf"
         export LIBELFDIR=$KRELL_ROOT_PREFIX
         export LIBELF_LIBNAME=$KRELL_ROOT_PREFIX/$LIBDIR/libelf.so
    elif [ -d $KRELL_ROOT_PREFIX ] && [ -f $KRELL_ROOT_PREFIX/$LIBDIR/libelf.a ]; then
-        #echo "KRELLROOT built libelf"
+        echo "KRELLROOT built libelf"
         export LIBELFDIR=$KRELL_ROOT_PREFIX
         export LIBELF_LIBNAME=$KRELL_ROOT_PREFIX/$LIBDIR/libelf.a
    else
+        echo "libelf found in /usr"
         export LIBELFDIR=/usr
         export LIBELF_LIBNAME=/usr/$LIBDIR/libelf.so
    fi
@@ -6502,7 +6548,20 @@ function build_dyninst_routine() {
         export LIBIBERTY_LIBNAME=/usr/$LIBDIR/libiberty.a
    fi
 
-   if [ -d $KRELL_ROOT_PREFIX/tbb ] && [ -f $KRELL_ROOT_PREFIX/tbb/lib/libtbb.so ]; then
+   echo "KRELL_ROOT_TBB (2) =${KRELL_ROOT_TBB}"
+   if [ -d $KRELL_ROOT_TBB ] && [ -f $KRELL_ROOT_TBB/lib/libtbb.so ]; then
+         echo "found TBB, in $KRELL_ROOT_TBB"
+         export TBBROOT=${KRELL_ROOT_TBB}/include
+         export TBB_INSTALL_DIR=${KRELL_ROOT_TBB}/lib
+         export TBB_ROOT_DIR=${KRELL_ROOT_TBB}/lib
+         export TBB_INCLUDE_DIR=${KRELL_ROOT_TBB}/include
+         export TBB_LIBRARY=${KRELL_ROOT_TBB}/lib
+         export TBB_FOUND=1
+         export TBB_INCLUDE_DIRS=${KRELL_ROOT_TBB}/include
+         export TBB_LIBRARIES="${KRELL_ROOT_TBB}/lib/libtbb.so ${KRELL_ROOT_TBB}/lib/libtbbmalloc_proxy.so"
+         echo "TBB_LIBRARIES=${TBB_LIBRARIES}"
+         echo "TBB_INCLUDE_DIRS=${TBB_INCLUDE_DIRS}"
+   elif [ -d $KRELL_ROOT_PREFIX/tbb ] && [ -f $KRELL_ROOT_PREFIX/tbb/lib/libtbb.so ]; then
          echo "found TBB, in $KRELL_ROOT_PREFIX/tbb"
          export TBBROOT=${KRELL_ROOT_PREFIX}/tbb/include
          export TBB_INSTALL_DIR=${KRELL_ROOT_PREFIX}/tbb/lib

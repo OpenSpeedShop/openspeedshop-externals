@@ -232,6 +232,7 @@ Option Descriptions:
 --with-xercesc <directory>
 --with-otf <directory>
 --with-QtGraph <directory>
+--with-tbb <directory>
 --with-vt <directory>
 --with-zlib <directory>
   Where <directory> is the installed path to the alternative component.
@@ -1754,6 +1755,18 @@ do
 	    test -d "$dir" || die "unable to find: $dir"
 	    export OPENSS_OTF="${dir}"
 	    export KRELL_ROOT_OTF="${dir}"
+            shift ; shift
+	    ;;
+
+       --with-tbb)
+	    test "x$2" != x || die "missing argument: $*"
+	    case "$2" in
+		/* )  dir="$2" ;;
+		* )   dir="`pwd`/$2" ;;
+	    esac
+	    test -d "$dir" || die "unable to find: $dir"
+	    export OPENSS_TBB="${dir}"
+	    export KRELL_ROOT_TBB="${dir}"
             shift ; shift
 	    ;;
 
